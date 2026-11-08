@@ -1,0 +1,19 @@
+{{>navbar}}
+<main class="p-4 pt-20 pb-24 max-w-lg mx-auto">
+  <h1 class="text-2xl mb-4">{{t 'lang.WEAR_STATS'}}</h1>
+  <table class="table table-sm">
+    <thead>
+      <tr><th>{{t 'lang.NAME'}}</th><th>{{t 'lang.WEAR_COUNT'}}</th><th>{{t 'lang.WEAR_LAST'}}</th></tr>
+    </thead>
+    <tbody>
+      {{#each stats}}
+      <tr>
+        <td><a class="link" href="/wardrobe/{{garmentId}}">{{name}}</a> <span class="text-xs text-base-content/60">{{category}}</span></td>
+        <td>{{wearCount}}</td>
+        <td>{{#if lastWorn}}{{lastWorn}}{{else}}{{t 'lang.WEAR_NEVER'}}{{/if}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</main>
+{{>dock}}

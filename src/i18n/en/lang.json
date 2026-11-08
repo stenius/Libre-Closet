@@ -338,5 +338,10 @@
   "API_TOKEN_NEVER_USED": "Never",
   "API_TOKEN_COPY_NOW": "Copy this token now. It won't be shown again.",
   "EXTRA_PHOTO_ADD": "Add Another Photo",
-  "EXTRA_PHOTO_DELETE": "Delete"
+  "EXTRA_PHOTO_DELETE": "Delete",
+  "WEAR_STATS": "Wear Stats",
+  "WEAR_COUNT": "Wears",
+  "WEAR_LAST": "Last worn",
+  "WEAR_NEVER": "Never",
+  "WEAR_LOG": "Log Wear"
 }

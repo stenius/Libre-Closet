@@ -2,6 +2,8 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { Garment } from '../dal/entity/garment.entity';
 import { GarmentPhoto } from '../dal/entity/garment-photo.entity';
+import { GarmentWear } from '../dal/entity/garment-wear.entity';
+import { WearService } from './wear.service';
 import { Outfit } from '../dal/entity/outfit.entity';
 import { OutfitCalendar } from '../dal/entity/outfit-calendar.entity';
 import { User } from '../dal/entity/user.entity';
@@ -25,6 +27,7 @@ import { WeatherModule } from '../weather/weather.module';
     MikroOrmModule.forFeature([
       Garment,
       GarmentPhoto,
+      GarmentWear,
       Outfit,
       OutfitCalendar,
       User,
@@ -37,7 +40,7 @@ import { WeatherModule } from '../weather/weather.module';
     CalendarController,
     ApiController,
   ],
-  providers: [GarmentService, OutfitService, CalendarService],
+  providers: [GarmentService, OutfitService, CalendarService, WearService],
   exports: [GarmentService, OutfitService, CalendarService],
 })
 export class WardrobeModule {}

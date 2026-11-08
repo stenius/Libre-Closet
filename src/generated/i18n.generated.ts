@@ -346,6 +346,11 @@ export type I18nTranslations = {
         "API_TOKEN_COPY_NOW": string;
         "EXTRA_PHOTO_ADD": string;
         "EXTRA_PHOTO_DELETE": string;
+        "WEAR_STATS": string;
+        "WEAR_COUNT": string;
+        "WEAR_LAST": string;
+        "WEAR_NEVER": string;
+        "WEAR_LOG": string;
     };
 };
 /* prettier-ignore */
