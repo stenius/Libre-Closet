@@ -37,6 +37,17 @@ export class ErrorViewFilter implements ExceptionFilter {
         ? exception.getResponse()
         : 'Internal server error';
 
+    if (request.url.startsWith('/api/')) {
+      response
+        .status(status)
+        .send(
+          typeof message === 'string'
+            ? { statusCode: status, message }
+            : message,
+        );
+      return;
+    }
+
     try {
       const context =
         (response as any).locals ||
