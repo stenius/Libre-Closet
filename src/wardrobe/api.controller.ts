@@ -35,6 +35,7 @@ import { GarmentColor } from './garment-color.enum';
 import { parsePhotoLabel } from './garment-attributes';
 import { GarmentService } from './garment.service';
 import { OutfitService } from './outfit.service';
+import { WearService } from './wear.service';
 
 @UseGuards(ApiTokenGuard)
 @Controller('api/v1')
@@ -43,6 +44,7 @@ export class ApiController {
     private readonly garmentService: GarmentService,
     private readonly outfitService: OutfitService,
     private readonly calendarService: CalendarService,
+    private readonly wearService: WearService,
   ) {}
 
   private userId(req: FastifyRequest): number | undefined {
@@ -210,6 +212,48 @@ export class ApiController {
     @Req() req: FastifyRequest,
   ) {
     await this.garmentService.removePhoto(id, photoId, this.userId(req));
+  }
+
+  @Get('wear-stats')
+  wearStats(
+    @Query('archived') archived: string | undefined,
+    @Req() req: FastifyRequest,
+  ) {
+    return this.wearService.stats(this.userId(req), archived === 'true');
+  }
+
+  @Get('garments/:id/wears')
+  async listWears(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: FastifyRequest,
+  ) {
+    const wears = await this.wearService.list(id, this.userId(req));
+    return wears.map((wear) => ({ id: wear.id, date: wear.wornOn }));
+  }
+
+  @Post('garments/:id/wears')
+  async logWear(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('date') date: unknown,
+    @Req() req: FastifyRequest,
+  ) {
+    parseDate('date', date);
+    const wear = await this.wearService.log(
+      id,
+      date as string,
+      this.userId(req),
+    );
+    return { id: wear.id, date: wear.wornOn };
+  }
+
+  @Delete('garments/:id/wears/:wearId')
+  @HttpCode(204)
+  async deleteWear(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('wearId', ParseIntPipe) wearId: number,
+    @Req() req: FastifyRequest,
+  ) {
+    await this.wearService.remove(id, wearId, this.userId(req));
   }
 
   @Delete('garments/:id')

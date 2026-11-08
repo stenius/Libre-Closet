@@ -21,6 +21,8 @@ import { Payload } from '../auth/dto/payload.dto';
 import { GarmentCategory } from './garment-category.enum';
 import { GarmentColor } from './garment-color.enum';
 import { GarmentService } from './garment.service';
+import { WearService } from './wear.service';
+import { parseDate } from './api.parsers';
 import { WardrobeShareService } from '../wardrobe-share/wardrobe-share.service';
 import { SharePermission } from '../dal/entity/wardrobe-share.entity';
 import type { SearchGarmentDto } from './dto/search-garment.dto';
@@ -38,6 +40,7 @@ export class WardrobeController {
 
   constructor(
     private readonly garmentService: GarmentService,
+    private readonly wearService: WearService,
     private readonly shareService: WardrobeShareService,
   ) {}
 
@@ -188,6 +191,24 @@ export class WardrobeController {
     return reply.redirect(`/wardrobe/${garment.id}?${params}`, 302);
   }
 
+  @Get('wear-stats')
+  @Render('wardrobe/wear-stats')
+  async wearStats(@Req() req: FastifyRequest) {
+    return { stats: await this.wearService.stats(this.userId(req)) };
+  }
+
+  @Post(':id/wears')
+  async logWear(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('date') date: unknown,
+    @Req() req: FastifyRequest,
+    @Res() reply: FastifyReply,
+  ) {
+    parseDate('date', date);
+    await this.wearService.log(id, date as string, this.userId(req));
+    return reply.redirect(`/wardrobe/${id}`, 302);
+  }
+
   @Get(':id')
   @Render('wardrobe/show')
   async show(
@@ -242,6 +263,12 @@ export class WardrobeController {
       viewOwner: viewOwner ?? null,
       justCreated: created === '1',
       justSavedPhoto: photoSaved === '1',
+      wear:
+        viewOwner == null
+          ? (await this.wearService.stats(userId, true)).find(
+              (stat) => stat.garmentId === id,
+            )
+          : undefined,
       warmthRange: formatWarmthRange(garment.warmthMinF, garment.warmthMaxF),
     };
   }

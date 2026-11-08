@@ -1,0 +1,14 @@
+{{#if wear}}
+<div class="flex flex-col gap-2 mb-6">
+  <div class="flex justify-between text-sm">
+    <a class="link" href="/wardrobe/wear-stats">{{t 'lang.WEAR_STATS'}}</a>
+    <span>{{t 'lang.WEAR_COUNT'}}: {{wear.wearCount}} · {{t 'lang.WEAR_LAST'}}: {{#if wear.lastWorn}}{{wear.lastWorn}}{{else}}{{t 'lang.WEAR_NEVER'}}{{/if}}</span>
+  </div>
+  {{#if canEdit}}
+  <form method="post" action="/wardrobe/{{garment.id}}/wears" class="flex gap-2">
+    <input type="date" name="date" required class="input input-bordered input-sm flex-1" />
+    <button type="submit" class="btn btn-neutral btn-sm">{{t 'lang.WEAR_LOG'}}</button>
+  </form>
+  {{/if}}
+</div>
+{{/if}}
