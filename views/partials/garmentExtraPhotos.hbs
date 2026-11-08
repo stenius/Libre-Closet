@@ -1,0 +1,21 @@
+{{#if extraPhotos.length}}
+<div class="grid grid-cols-3 gap-2 mb-4">
+  {{#each extraPhotos}}
+  <figure class="flex flex-col gap-1">
+    <img src="/file/{{fileName}}" alt="{{label}}" class="rounded-box aspect-square object-cover" loading="lazy" />
+    {{#if label}}<figcaption class="text-xs text-center">{{label}}</figcaption>{{/if}}
+    {{#if ../canEdit}}
+    <form method="post" action="/wardrobe/{{../garment.id}}/photos/{{id}}/delete{{#if ../viewOwner}}?ownerId={{../viewOwner}}{{/if}}">
+      <button type="submit" class="btn btn-ghost btn-xs w-full">{{t 'lang.EXTRA_PHOTO_DELETE'}}</button>
+    </form>
+    {{/if}}
+  </figure>
+  {{/each}}
+</div>
+{{/if}}
+{{#if canEdit}}
+<form method="post" enctype="multipart/form-data" action="/wardrobe/{{garment.id}}/photos{{#if viewOwner}}?ownerId={{viewOwner}}{{/if}}" class="flex flex-col gap-2 mb-6">
+  <input type="file" name="photo" accept="image/*" required class="file-input file-input-bordered file-input-sm w-full" />
+  <button type="submit" class="btn btn-neutral btn-sm">{{t 'lang.EXTRA_PHOTO_ADD'}}</button>
+</form>
+{{/if}}

@@ -344,6 +344,8 @@ export type I18nTranslations = {
         "API_TOKEN_LAST_USED": string;
         "API_TOKEN_NEVER_USED": string;
         "API_TOKEN_COPY_NOW": string;
+        "EXTRA_PHOTO_ADD": string;
+        "EXTRA_PHOTO_DELETE": string;
     };
 };
 /* prettier-ignore */

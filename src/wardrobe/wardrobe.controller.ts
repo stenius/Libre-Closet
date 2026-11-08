@@ -219,8 +219,19 @@ export class WardrobeController {
       canClone = false;
     }
 
+    const extraPhotos = await this.garmentService.listPhotos(
+      id,
+      userId,
+      viewOwner,
+    );
+
     return {
       garment,
+      extraPhotos: extraPhotos.map((photo) => ({
+        id: photo.id,
+        label: photo.label,
+        fileName: photo.file.getEntity().fileName,
+      })),
       categoryLabel: this.garmentService.resolveCategoryLabel(
         garment.category,
         i18n,
@@ -394,6 +405,53 @@ export class WardrobeController {
     );
     const redirectSuffix = viewOwner ? `?ownerId=${viewOwner}` : '';
     return reply.redirect(`/wardrobe/${id}${redirectSuffix}`, 302);
+  }
+
+  private async assertCanManage(
+    userId: number | undefined,
+    viewOwner: number | undefined,
+  ): Promise<void> {
+    if (userId != null && viewOwner != null && viewOwner !== userId) {
+      const canManage = await this.shareService.canManage(userId, viewOwner);
+      if (!canManage) throw new ForbiddenException();
+    }
+  }
+
+  @Post(':id/photos')
+  async addExtraPhoto(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: FastifyRequest,
+    @Res() reply: FastifyReply,
+    @Query('ownerId') ownerId: string | undefined,
+  ) {
+    const userId = this.userId(req);
+    const viewOwner = ownerId ? parseInt(ownerId, 10) : undefined;
+    await this.assertCanManage(userId, viewOwner);
+    await this.garmentService.addPhoto(
+      id,
+      () => (req as any).files({ limits: { files: 1 } }),
+      null,
+      userId,
+      viewOwner,
+    );
+    const suffix = viewOwner ? `?ownerId=${viewOwner}` : '';
+    return reply.redirect(`/wardrobe/${id}${suffix}`, 302);
+  }
+
+  @Post(':id/photos/:photoId/delete')
+  async removeExtraPhoto(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('photoId', ParseIntPipe) photoId: number,
+    @Req() req: FastifyRequest,
+    @Res() reply: FastifyReply,
+    @Query('ownerId') ownerId: string | undefined,
+  ) {
+    const userId = this.userId(req);
+    const viewOwner = ownerId ? parseInt(ownerId, 10) : undefined;
+    await this.assertCanManage(userId, viewOwner);
+    await this.garmentService.removePhoto(id, photoId, userId, viewOwner);
+    const suffix = viewOwner ? `?ownerId=${viewOwner}` : '';
+    return reply.redirect(`/wardrobe/${id}${suffix}`, 302);
   }
 
   @Post(':id/photo')

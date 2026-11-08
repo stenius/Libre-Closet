@@ -1,3 +1,4 @@
+import { GarmentPhoto } from '../dal/entity/garment-photo.entity';
 import { EntityRepository, FilterQuery } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { randomUUID } from 'node:crypto';
@@ -5,6 +6,7 @@ import {
   ForbiddenException,
   Injectable,
   Logger,
+  BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
 import { I18nContext } from 'nestjs-i18n';
@@ -48,6 +50,8 @@ export class GarmentService {
   constructor(
     @InjectRepository(Garment)
     private readonly garmentRepository: EntityRepository<Garment>,
+    @InjectRepository(GarmentPhoto)
+    private readonly photoRepository: EntityRepository<GarmentPhoto>,
     @InjectRepository(User)
     private readonly userRepository: EntityRepository<User>,
     private readonly fileService: FileService,
@@ -301,11 +305,14 @@ export class GarmentService {
             userId,
             photoFileName,
           );
+          // Awaited after the loop; a rejection before then must not crash Node.
+          photoPromise.catch(() => undefined);
         } else if (file.fieldname === 'nobgPhoto') {
           nobgPromise = this.fileService.storeNobgVariantFromStream(
             file.file,
             photoFileName,
           );
+          nobgPromise.catch(() => undefined);
         } else {
           file.file.resume();
         }
@@ -389,7 +396,85 @@ export class GarmentService {
 
   async remove(id: number, userId?: number): Promise<void> {
     const garment = await this.findOne(id, userId);
+    const photos = await this.findPhotos(id);
+    await Promise.all(photos.map((photo) => this.deletePhotoRecord(photo)));
     await this.garmentRepository.getEntityManager().removeAndFlush(garment);
+  }
+
+  private findPhotos(garmentId: number): Promise<GarmentPhoto[]> {
+    return this.photoRepository.find(
+      { garment: garmentId },
+      { populate: ['file'], orderBy: { id: 'ASC' } },
+    );
+  }
+
+  private async deletePhotoRecord(photo: GarmentPhoto): Promise<void> {
+    const file = photo.file.getEntity();
+    const em = this.garmentRepository.getEntityManager();
+    await this.fileService
+      .delete(file.fileName)
+      .catch((err) => this.logger.warn(err));
+    await em.nativeDelete(GarmentPhoto, { id: photo.id });
+    await em.nativeDelete(File, { id: file.id });
+  }
+
+  async listPhotos(
+    garmentId: number,
+    userId?: number,
+    viewOwner?: number,
+  ): Promise<GarmentPhoto[]> {
+    await this.findOne(garmentId, userId, viewOwner);
+    return this.findPhotos(garmentId);
+  }
+
+  /**
+   * Adds an extra photo. Access is checked before `getFiles` opens the
+   * multipart stream, so a rejected upload never reaches storage.
+   */
+  async addPhoto(
+    garmentId: number,
+    getFiles: () => AsyncIterableIterator<MultipartFile>,
+    label: string | null,
+    userId?: number,
+    viewOwner?: number,
+  ): Promise<GarmentPhoto> {
+    const garment = await this.findOne(garmentId, userId, viewOwner);
+
+    let stored: Promise<File> | undefined;
+    for await (const part of getFiles()) {
+      if (part.fieldname === 'photo' && !stored) {
+        stored = this.fileService.storeImageFromFileUpload(part, userId);
+        // Awaited after the loop; a rejection before then must not crash Node.
+        stored.catch(() => undefined);
+      } else {
+        part.file.resume();
+      }
+    }
+    if (!stored) throw new BadRequestException('photo file is required');
+
+    const photo = this.photoRepository.create({
+      garment: garment as any,
+      file: (await stored) as any,
+      label,
+      createdAt: new Date(),
+    });
+    await this.garmentRepository.getEntityManager().persistAndFlush(photo);
+    return photo;
+  }
+
+  async removePhoto(
+    garmentId: number,
+    photoId: number,
+    userId?: number,
+    viewOwner?: number,
+  ): Promise<void> {
+    await this.findOne(garmentId, userId, viewOwner);
+    const photo = await this.photoRepository.findOne(
+      { id: photoId, garment: garmentId },
+      { populate: ['file'] },
+    );
+    if (!photo) throw new NotFoundException('Photo not found');
+    await this.deletePhotoRecord(photo);
   }
 
   async archive(id: number, userId?: number): Promise<Garment> {

@@ -21,6 +21,7 @@ import { OutfitSlot } from '../dal/entity/outfit.entity';
 import {
   serializeCalendarEntry,
   serializeGarment,
+  serializeGarmentPhoto,
   serializeOutfit,
 } from './api.serializers';
 import { CalendarService } from './calendar.service';
@@ -31,6 +32,7 @@ import {
   parseGarmentBody,
 } from './api.parsers';
 import { GarmentColor } from './garment-color.enum';
+import { parsePhotoLabel } from './garment-attributes';
 import { GarmentService } from './garment.service';
 import { OutfitService } from './outfit.service';
 
@@ -174,6 +176,40 @@ export class ApiController {
       userId,
     );
     return serializeGarment(garment);
+  }
+
+  @Get('garments/:id/photos')
+  async listPhotos(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: FastifyRequest,
+  ) {
+    const photos = await this.garmentService.listPhotos(id, this.userId(req));
+    return photos.map(serializeGarmentPhoto);
+  }
+
+  @Post('garments/:id/photos')
+  async addPhoto(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('label') label: unknown,
+    @Req() req: FastifyRequest,
+  ) {
+    const photo = await this.garmentService.addPhoto(
+      id,
+      () => (req as any).files({ limits: { files: 1 } }),
+      parsePhotoLabel(label),
+      this.userId(req),
+    );
+    return serializeGarmentPhoto(photo);
+  }
+
+  @Delete('garments/:id/photos/:photoId')
+  @HttpCode(204)
+  async deletePhoto(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('photoId', ParseIntPipe) photoId: number,
+    @Req() req: FastifyRequest,
+  ) {
+    await this.garmentService.removePhoto(id, photoId, this.userId(req));
   }
 
   @Delete('garments/:id')
