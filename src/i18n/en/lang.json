@@ -329,5 +329,12 @@
   "CONDITION_GOOD": "Good",
   "CONDITION_WORN": "Worn",
   "CONDITION_DAMAGED": "Damaged",
-  "REPAIR_NOTES": "Repair Notes"
+  "REPAIR_NOTES": "Repair Notes",
+  "API_TOKENS": "API Tokens",
+  "API_TOKEN_NAME": "Token name",
+  "API_TOKEN_CREATE": "Create",
+  "API_TOKEN_REVOKE": "Revoke",
+  "API_TOKEN_LAST_USED": "Last used",
+  "API_TOKEN_NEVER_USED": "Never",
+  "API_TOKEN_COPY_NOW": "Copy this token now. It won't be shown again."
 }

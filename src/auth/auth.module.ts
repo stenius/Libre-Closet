@@ -4,6 +4,13 @@ import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
 import { ConditionalAuthGuard } from './conditional-auth.guard';
 import { RegistrationGuard } from './registration.guard';
+import { ApiToken } from '../dal/entity/api-token.entity';
+import {
+  ApiIdentityController,
+  ApiTokenController,
+} from './api-token.controller';
+import { ApiTokenGuard } from './api-token.guard';
+import { ApiTokenService } from './api-token.service';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
@@ -22,17 +29,26 @@ import { ViewContextModule } from '../view-context/view-context.module';
         signOptions: { expiresIn: '365d' },
       }),
     }),
-    MikroOrmModule.forFeature([PasswordReset, User]),
+    MikroOrmModule.forFeature([ApiToken, PasswordReset, User]),
     EmailModule,
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, ApiTokenController, ApiIdentityController],
   providers: [
     AuthService,
     AuthGuard,
     ConditionalAuthGuard,
     RegistrationGuard,
+    ApiTokenGuard,
+    ApiTokenService,
     ViewContextModule,
   ],
-  exports: [JwtModule, AuthService, AuthGuard, ConditionalAuthGuard],
+  exports: [
+    JwtModule,
+    AuthService,
+    AuthGuard,
+    ConditionalAuthGuard,
+    ApiTokenGuard,
+    ApiTokenService,
+  ],
 })
 export class AuthModule {}

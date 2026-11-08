@@ -337,6 +337,13 @@ export type I18nTranslations = {
         "CONDITION_WORN": string;
         "CONDITION_DAMAGED": string;
         "REPAIR_NOTES": string;
+        "API_TOKENS": string;
+        "API_TOKEN_NAME": string;
+        "API_TOKEN_CREATE": string;
+        "API_TOKEN_REVOKE": string;
+        "API_TOKEN_LAST_USED": string;
+        "API_TOKEN_NEVER_USED": string;
+        "API_TOKEN_COPY_NOW": string;
     };
 };
 /* prettier-ignore */
