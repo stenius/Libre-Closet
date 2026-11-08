@@ -1,12 +1,16 @@
 import { EntityRepository, wrap } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { I18nContext } from 'nestjs-i18n';
+import type { MultipartFile } from '@fastify/multipart';
+import { File } from '../dal/entity/file.entity';
+import { FileService } from '../file/file-service.abstract';
 import { Garment } from '../dal/entity/garment.entity';
 import { Outfit, OutfitSlot } from '../dal/entity/outfit.entity';
 import { User } from '../dal/entity/user.entity';
@@ -26,6 +30,7 @@ export class OutfitService {
     @InjectRepository(User)
     private readonly userRepository: EntityRepository<User>,
     private readonly garmentService: GarmentService,
+    private readonly fileService: FileService,
   ) {}
 
   async findAll(userId?: number): Promise<Outfit[]> {
@@ -44,7 +49,7 @@ export class OutfitService {
 
   async findOne(id: number, userId?: number): Promise<Outfit> {
     const outfit = await this.outfitRepository.findOne(id, {
-      populate: ['garments', 'garments.photo'],
+      populate: ['garments', 'garments.photo', 'photo'],
     });
     if (!outfit) throw new NotFoundException('Outfit not found');
     if (userId != null) {
@@ -123,7 +128,58 @@ export class OutfitService {
 
   async remove(id: number, userId?: number): Promise<void> {
     const outfit = await this.findOne(id, userId);
+    const photo = outfit.photo as unknown as File | undefined;
     await this.outfitRepository.getEntityManager().removeAndFlush(outfit);
+    await this.deleteStoredPhoto(photo);
+  }
+
+  /**
+   * Sets or replaces the outfit photo. Access is checked before `getFiles`
+   * opens the multipart stream, so a rejected upload never reaches storage.
+   */
+  async setPhoto(
+    id: number,
+    getFiles: () => AsyncIterableIterator<MultipartFile>,
+    userId?: number,
+  ): Promise<Outfit> {
+    const outfit = await this.findOne(id, userId);
+
+    let stored: Promise<File> | undefined;
+    for await (const part of getFiles()) {
+      if (part.fieldname === 'photo' && !stored) {
+        stored = this.fileService.storeImageFromFileUpload(part, userId);
+        // Awaited after the loop; a rejection before then must not crash Node.
+        stored.catch(() => undefined);
+      } else {
+        part.file.resume();
+      }
+    }
+    if (!stored) throw new BadRequestException('photo file is required');
+
+    const previous = outfit.photo as unknown as File | undefined;
+    outfit.photo = (await stored) as any;
+    await this.outfitRepository.getEntityManager().flush();
+    await this.deleteStoredPhoto(previous);
+    return outfit;
+  }
+
+  async removePhoto(id: number, userId?: number): Promise<void> {
+    const outfit = await this.findOne(id, userId);
+    const photo = outfit.photo as unknown as File | undefined;
+    if (!photo) return;
+    (outfit as any).photo = null;
+    await this.outfitRepository.getEntityManager().flush();
+    await this.deleteStoredPhoto(photo);
+  }
+
+  private async deleteStoredPhoto(photo?: File | null): Promise<void> {
+    if (!photo) return;
+    await this.fileService
+      .delete(photo.fileName)
+      .catch((err) => this.logger.warn(err));
+    await this.outfitRepository
+      .getEntityManager()
+      .nativeDelete(File, { id: photo.id });
   }
 
   parseSlotsFromBody(

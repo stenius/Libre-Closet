@@ -1,0 +1,24 @@
+{{#if outfit.photo}}
+<figure class="rounded-box overflow-hidden mb-3 bg-base-200 w-full">
+  <img src="/file/{{outfit.photo.fileName}}" alt="{{outfit.name}}" class="w-full object-contain max-h-[32rem]" />
+</figure>
+{{/if}}
+<div class="flex flex-wrap gap-2 mb-6">
+  <form method="post" enctype="multipart/form-data" action="/outfits/{{outfit.id}}/photo">
+    <label class="btn btn-neutral btn-sm">
+      {{#if outfit.photo}}{{t 'lang.OUTFIT_PHOTO_RETAKE'}}{{else}}{{t 'lang.OUTFIT_PHOTO_TAKE'}}{{/if}}
+      <input id="outfitPhotoCapture" type="file" name="photo" accept="image/jpeg,image/png,image/gif,image/webp" capture="environment" class="hidden" onchange="this.form.submit()" />
+    </label>
+  </form>
+  <form method="post" enctype="multipart/form-data" action="/outfits/{{outfit.id}}/photo">
+    <label class="btn btn-outline btn-sm">
+      {{t 'lang.OUTFIT_PHOTO_CHOOSE'}}
+      <input id="outfitPhotoFile" type="file" name="photo" accept="image/jpeg,image/png,image/gif,image/webp" class="hidden" onchange="this.form.submit()" />
+    </label>
+  </form>
+  {{#if outfit.photo}}
+  <form method="post" action="/outfits/{{outfit.id}}/photo/delete" onsubmit="return confirm('{{t 'lang.CONFIRM_DELETE'}}')">
+    <button type="submit" class="btn btn-ghost btn-sm">{{t 'lang.OUTFIT_PHOTO_REMOVE'}}</button>
+  </form>
+  {{/if}}
+</div>

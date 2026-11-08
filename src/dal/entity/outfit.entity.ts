@@ -1,4 +1,6 @@
+import { File } from './file.entity';
 import {
+  OneToOne,
   Collection,
   Entity,
   ManyToMany,
@@ -29,6 +31,9 @@ export class Outfit extends ShareableId {
 
   @Property({ type: 'json', nullable: true })
   public slots?: OutfitSlot[];
+
+  @OneToOne({ entity: () => File, nullable: true, deleteRule: 'set null' })
+  public photo?: Ref<File>;
 
   @ManyToMany(() => Garment, (garment) => garment.outfits, { owner: true })
   public garments = new Collection<Garment>(this);

@@ -19,6 +19,7 @@ import { I18n, I18nContext } from 'nestjs-i18n';
 import { ConditionalAuthGuard } from '../auth/conditional-auth.guard';
 import { Payload } from '../auth/dto/payload.dto';
 import { OutfitService } from './outfit.service';
+import { orderOutfitPieces } from './outfit-pieces';
 import { GarmentService } from './garment.service';
 import { CalendarService } from './calendar.service';
 
@@ -128,10 +129,54 @@ export class OutfitController {
   async show(
     @Param('id', ParseIntPipe) id: number,
     @Req() req: FastifyRequest,
+    @I18n() i18n: I18nContext,
   ) {
     const outfit = await this.outfitService.findOne(id, this.userId(req));
-    const garments = outfit.garments.getItems();
-    return { outfit, garments };
+    const pieces = orderOutfitPieces(
+      outfit.garments.getItems(),
+      outfit.slots,
+    ).map((garment) => {
+      const categoryLabel = this.garmentService.resolveCategoryLabel(
+        garment.category,
+        i18n,
+      );
+      const colors = garment.color?.split(',').filter(Boolean).join(', ');
+      return {
+        id: garment.id,
+        photo: garment.photo?.fileName ?? null,
+        categoryLabel,
+        displayName: garment.name || categoryLabel,
+        details: [garment.brand, colors, garment.size]
+          .filter(Boolean)
+          .join(' · '),
+        damaged: garment.condition === 'damaged',
+      };
+    });
+    return { outfit, pieces };
+  }
+
+  @Post(':id/photo')
+  async uploadPhoto(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: FastifyRequest,
+    @Res() reply: FastifyReply,
+  ) {
+    await this.outfitService.setPhoto(
+      id,
+      () => (req as any).files({ limits: { files: 1 } }),
+      this.userId(req),
+    );
+    return reply.redirect(`/outfits/${id}`, 302);
+  }
+
+  @Post(':id/photo/delete')
+  async removePhoto(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: FastifyRequest,
+    @Res() reply: FastifyReply,
+  ) {
+    await this.outfitService.removePhoto(id, this.userId(req));
+    return reply.redirect(`/outfits/${id}`, 302);
   }
 
   @Get(':id/edit')

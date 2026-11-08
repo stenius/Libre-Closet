@@ -325,6 +325,29 @@ export class ApiController {
     return serializeOutfit(await this.outfitService.findOne(id, userId));
   }
 
+  @Post('outfits/:id/photo')
+  async setOutfitPhoto(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: FastifyRequest,
+  ) {
+    const userId = this.userId(req);
+    await this.outfitService.setPhoto(
+      id,
+      () => (req as any).files({ limits: { files: 1 } }),
+      userId,
+    );
+    return serializeOutfit(await this.outfitService.findOne(id, userId));
+  }
+
+  @Delete('outfits/:id/photo')
+  @HttpCode(204)
+  async deleteOutfitPhoto(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: FastifyRequest,
+  ) {
+    await this.outfitService.removePhoto(id, this.userId(req));
+  }
+
   @Delete('outfits/:id')
   @HttpCode(204)
   async deleteOutfit(

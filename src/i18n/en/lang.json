@@ -356,5 +356,11 @@
   "MEASUREMENT_SHOULDERS": "Shoulders (in)",
   "MEASUREMENT_WAIST": "Waist (in)",
   "MEASUREMENT_INSEAM": "Inseam (in)",
-  "MEASUREMENT_NECK": "Neck (in)"
+  "MEASUREMENT_NECK": "Neck (in)",
+  "OUTFIT_PIECES": "Pieces to wear",
+  "OUTFIT_PIECE_NO_PHOTO": "No photo",
+  "OUTFIT_PHOTO_TAKE": "Take Outfit Photo",
+  "OUTFIT_PHOTO_RETAKE": "Retake Photo",
+  "OUTFIT_PHOTO_CHOOSE": "Choose Photo",
+  "OUTFIT_PHOTO_REMOVE": "Remove Photo"
 }

@@ -14,6 +14,7 @@ import { CalendarDay } from './view-models/calendar-day.view-model';
 import { WeekSchedule } from './view-models/week-schedule.view-model';
 import { I18nContext } from 'nestjs-i18n';
 import { WeekNavBoundaries } from './view-models/week-nav-boundaries';
+import { orderOutfitPieces } from './outfit-pieces';
 import { WeatherService } from '../weather/weather.service';
 import {
   WeatherDayForecast,
@@ -458,6 +459,10 @@ export class CalendarService {
               id: outfit.id,
               name: outfit.name || null,
               garmentPhotos,
+              pieces: orderOutfitPieces(
+                outfit.garments.getItems(),
+                outfit.slots,
+              ).map((g) => g.name || g.category),
               chipHue: CHIP_HUES[entryIndex % CHIP_HUES.length],
             },
           };
