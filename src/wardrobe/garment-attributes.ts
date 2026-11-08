@@ -147,6 +147,15 @@ export function assertWarmthRange(
   }
 }
 
+/** Validates an extra photo's optional label; blank means no label. */
+export function parsePhotoLabel(value: unknown): string | null {
+  if (isBlank(value)) return null;
+  if (typeof value !== 'string' || value.trim().length > 50) {
+    throw new BadRequestException('label must be at most 50 characters');
+  }
+  return value.trim();
+}
+
 /** Display text for a range; returned as a string so 0°F stays visible. */
 export function formatWarmthRange(
   min?: number | null,

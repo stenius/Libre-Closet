@@ -1,4 +1,5 @@
 import { Garment } from '../dal/entity/garment.entity';
+import { GarmentPhoto } from '../dal/entity/garment-photo.entity';
 import { OutfitCalendar } from '../dal/entity/outfit-calendar.entity';
 import { Outfit } from '../dal/entity/outfit.entity';
 
@@ -38,6 +39,14 @@ export function serializeGarment(garment: Garment) {
     fitNotes: garment.fitNotes ?? null,
     condition: garment.condition ?? null,
     repairNotes: garment.repairNotes ?? null,
+  };
+}
+
+export function serializeGarmentPhoto(photo: GarmentPhoto) {
+  return {
+    id: photo.id,
+    photo: photo.file.getEntity().fileName,
+    label: photo.label ?? null,
   };
 }
 
