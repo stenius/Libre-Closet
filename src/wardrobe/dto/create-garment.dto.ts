@@ -1,5 +1,6 @@
 import { MultipartFile } from '@fastify/multipart';
-export interface CreateGarmentDto {
+import { GarmentAttributes } from '../garment-attributes';
+export interface CreateGarmentDto extends Partial<GarmentAttributes> {
   name?: string;
   category: string;
   brand?: string;

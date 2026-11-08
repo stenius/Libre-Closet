@@ -249,6 +249,46 @@
         <span class="text-base-content/60 text-sm">{{t 'lang.WASHING_DETAILS'}}</span>
         <p class="text-sm">{{garment.washingDetails}}</p>
       </div>
+      {{/if}} {{#if garment.materials}}
+      <div class="flex flex-col gap-1">
+        <span class="text-base-content/60 text-sm">{{t 'lang.MATERIALS'}}</span>
+        <p class="text-sm">{{garment.materials}}</p>
+      </div>
+      {{/if}} {{#if warmthRange}}
+      <div class="flex justify-between">
+        <span class="text-base-content/60 text-sm">{{t 'lang.WARMTH_RANGE'}}</span>
+        <span class="font-medium">{{warmthRange}}</span>
+      </div>
+      {{/if}} {{#if garment.waterResistance}}
+      <div class="flex justify-between">
+        <span class="text-base-content/60 text-sm">{{t 'lang.WATER_RESISTANCE'}}</span>
+        <span class="capitalize font-medium">{{garment.waterResistance}}</span>
+      </div>
+      {{/if}} {{#if garment.layer}}
+      <div class="flex justify-between">
+        <span class="text-base-content/60 text-sm">{{t 'lang.LAYER'}}</span>
+        <span class="capitalize font-medium">{{garment.layer}}</span>
+      </div>
+      {{/if}} {{#if garment.formality}}
+      <div class="flex justify-between">
+        <span class="text-base-content/60 text-sm">{{t 'lang.FORMALITY'}}</span>
+        <span class="font-medium">{{garment.formality}}</span>
+      </div>
+      {{/if}} {{#if garment.fitNotes}}
+      <div class="flex flex-col gap-1">
+        <span class="text-base-content/60 text-sm">{{t 'lang.FIT_NOTES'}}</span>
+        <p class="text-sm">{{garment.fitNotes}}</p>
+      </div>
+      {{/if}} {{#if garment.condition}}
+      <div class="flex justify-between">
+        <span class="text-base-content/60 text-sm">{{t 'lang.CONDITION'}}</span>
+        <span class="capitalize font-medium">{{garment.condition}}</span>
+      </div>
+      {{/if}} {{#if garment.repairNotes}}
+      <div class="flex flex-col gap-1">
+        <span class="text-base-content/60 text-sm">{{t 'lang.REPAIR_NOTES'}}</span>
+        <p class="text-sm">{{garment.repairNotes}}</p>
+      </div>
       {{/if}} {{#if garment.dateAquired}}
       <div class="flex justify-between">
         <span class="text-base-content/60 text-sm">{{t 'lang.DATE_AQUIRED'}}</span>

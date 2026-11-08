@@ -25,6 +25,11 @@ import { WardrobeShareService } from '../wardrobe-share/wardrobe-share.service';
 import { SharePermission } from '../dal/entity/wardrobe-share.entity';
 import type { SearchGarmentDto } from './dto/search-garment.dto';
 import type { FastifyReply, FastifyRequest } from 'fastify';
+import {
+  formatWarmthRange,
+  GarmentAttributesInput,
+  parseGarmentAttributes,
+} from './garment-attributes';
 
 @UseGuards(ConditionalAuthGuard)
 @Controller('wardrobe')
@@ -142,7 +147,7 @@ export class WardrobeController {
       notes?: string;
       washingDetails?: string;
       dateAquired?: string;
-    },
+    } & GarmentAttributesInput,
     @Req() req: FastifyRequest,
     @Res() reply: FastifyReply,
     @Query('ownerId') ownerId: string | undefined,
@@ -173,6 +178,7 @@ export class WardrobeController {
         notes: body.notes,
         washingDetails: body.washingDetails,
         dateAquired: body.dateAquired,
+        ...parseGarmentAttributes(body),
       },
       viewOwner ?? userId,
     );
@@ -225,6 +231,7 @@ export class WardrobeController {
       viewOwner: viewOwner ?? null,
       justCreated: created === '1',
       justSavedPhoto: photoSaved === '1',
+      warmthRange: formatWarmthRange(garment.warmthMinF, garment.warmthMaxF),
     };
   }
 
@@ -318,7 +325,7 @@ export class WardrobeController {
       color?: GarmentColor;
       size?: string;
       notes?: string;
-    },
+    } & GarmentAttributesInput,
     @Req() req: FastifyRequest,
     @Res() reply: FastifyReply,
     @Query('ownerId') ownerId: string | undefined,
@@ -336,6 +343,7 @@ export class WardrobeController {
         color: Array.isArray(body.color) ? body.color.join(',') : body.color,
         size: body.size,
         notes: body.notes,
+        ...parseGarmentAttributes(body),
       },
       userId,
     );
@@ -355,7 +363,7 @@ export class WardrobeController {
       notes?: string;
       washingDetails?: string;
       dateAquired?: string;
-    },
+    } & GarmentAttributesInput,
     @Req() req: FastifyRequest,
     @Res() reply: FastifyReply,
     @Query('ownerId') ownerId: string | undefined,
@@ -379,6 +387,7 @@ export class WardrobeController {
         notes: body.notes,
         washingDetails: body.washingDetails,
         dateAquired: body.dateAquired,
+        ...parseGarmentAttributes(body),
       },
       viewOwner ?? userId,
       userId,
