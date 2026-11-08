@@ -14,6 +14,11 @@ import { Outfit } from './outfit.entity';
 import { ShareableId } from './shareableId.entity';
 import { User } from './user.entity';
 import { GarmentColor } from '../../wardrobe/garment-color.enum';
+import type {
+  GarmentCondition,
+  GarmentLayer,
+  WaterResistance,
+} from '../../wardrobe/garment-attributes';
 
 export { GarmentColor };
 
@@ -47,6 +52,33 @@ export class Garment extends ShareableId {
   public archived = false;
   @Property({ nullable: true, columnType: 'text' })
   public washingDetails?: string;
+
+  @Property({ type: 'text', nullable: true })
+  public materials?: string | null;
+
+  @Property({ type: 'integer', nullable: true })
+  public warmthMinF?: number | null;
+
+  @Property({ type: 'integer', nullable: true })
+  public warmthMaxF?: number | null;
+
+  @Property({ type: 'string', nullable: true })
+  public waterResistance?: WaterResistance | null;
+
+  @Property({ type: 'string', nullable: true })
+  public layer?: GarmentLayer | null;
+
+  @Property({ type: 'integer', nullable: true })
+  public formality?: number | null;
+
+  @Property({ type: 'text', nullable: true })
+  public fitNotes?: string | null;
+
+  @Property({ type: 'string', nullable: true })
+  public condition?: GarmentCondition | null;
+
+  @Property({ type: 'text', nullable: true })
+  public repairNotes?: string | null;
 
   @OneToOne({
     entity: () => File,

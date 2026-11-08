@@ -18,6 +18,11 @@ import { UpdateGarmentDto } from './dto/update-garment.dto';
 import { SearchGarmentDto } from './dto/search-garment.dto';
 import { GarmentCategory } from './garment-category.enum';
 import { WardrobeShareService } from '../wardrobe-share/wardrobe-share.service';
+import {
+  assertWarmthRange,
+  GarmentAttributes,
+  pickGarmentAttributes,
+} from './garment-attributes';
 
 const CANONICAL_SIZES = [
   'XX-Small',
@@ -127,6 +132,8 @@ export class GarmentService {
   }
 
   async create(dto: CreateGarmentDto, userId?: number): Promise<Garment> {
+    const attributes = pickGarmentAttributes(dto);
+    assertWarmthRange({ warmthMinF: null, warmthMaxF: null }, attributes);
     let photo: File | undefined = undefined;
     if (dto.files) {
       for await (const file of dto.files) {
@@ -148,6 +155,7 @@ export class GarmentService {
       washingDetails: dto.washingDetails,
       dateAquired: dto.dateAquired ? new Date(dto.dateAquired) : undefined,
       photo: photo ?? undefined,
+      ...attributes,
     });
 
     if (userId != null) {
@@ -168,9 +176,11 @@ export class GarmentService {
       color?: string;
       size?: string;
       notes?: string;
-    },
+    } & Partial<GarmentAttributes>,
     userId?: number,
   ): Promise<Garment> {
+    const attributes = pickGarmentAttributes(dto);
+    assertWarmthRange({ warmthMinF: null, warmthMaxF: null }, attributes);
     const source = await this.garmentRepository.findOne(sourceId, {
       populate: ['photo'],
     });
@@ -202,6 +212,7 @@ export class GarmentService {
       size: this.normalizeSize(dto.size),
       notes: dto.notes,
       photo: photo ?? undefined,
+      ...attributes,
     });
 
     if (userId != null) {
@@ -290,6 +301,14 @@ export class GarmentService {
     }
 
     const garment = await this.findOne(id, requestingUserId, userId);
+    const attributes = pickGarmentAttributes(dto);
+    assertWarmthRange(
+      {
+        warmthMinF: garment.warmthMinF ?? null,
+        warmthMaxF: garment.warmthMaxF ?? null,
+      },
+      attributes,
+    );
 
     if (photo) {
       await this.deleteOldPhoto(garment);
@@ -307,6 +326,7 @@ export class GarmentService {
       garment.dateAquired = dto.dateAquired
         ? new Date(dto.dateAquired)
         : undefined;
+    Object.assign(garment, attributes);
 
     await this.garmentRepository.getEntityManager().flush();
     return garment;

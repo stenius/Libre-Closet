@@ -1,0 +1,61 @@
+<div class="form-control">
+  <label class="label"><span class="label-text">{{t 'lang.MATERIALS'}}</span></label>
+  <input type="text" name="materials" class="input input-bordered" value="{{garment.materials}}" placeholder="100% merino wool" />
+</div>
+
+<div class="grid grid-cols-2 gap-2">
+  <div class="form-control">
+    <label class="label"><span class="label-text">{{t 'lang.WARMTH_MIN_F'}}</span></label>
+    <input type="number" step="1" min="-100" max="150" name="warmthMinF" class="input input-bordered" value="{{garment.warmthMinF}}" />
+  </div>
+  <div class="form-control">
+    <label class="label"><span class="label-text">{{t 'lang.WARMTH_MAX_F'}}</span></label>
+    <input type="number" step="1" min="-100" max="150" name="warmthMaxF" class="input input-bordered" value="{{garment.warmthMaxF}}" />
+  </div>
+</div>
+
+<div class="form-control">
+  <label class="label"><span class="label-text">{{t 'lang.WATER_RESISTANCE'}}</span></label>
+  <select name="waterResistance" class="select select-bordered">
+    <option value=""></option>
+    <option value="none" {{#ifEquals garment.waterResistance 'none'}}selected{{/ifEquals}}>{{t 'lang.WATER_RESISTANCE_NONE'}}</option>
+    <option value="resistant" {{#ifEquals garment.waterResistance 'resistant'}}selected{{/ifEquals}}>{{t 'lang.WATER_RESISTANCE_RESISTANT'}}</option>
+    <option value="waterproof" {{#ifEquals garment.waterResistance 'waterproof'}}selected{{/ifEquals}}>{{t 'lang.WATER_RESISTANCE_WATERPROOF'}}</option>
+  </select>
+</div>
+
+<div class="form-control">
+  <label class="label"><span class="label-text">{{t 'lang.LAYER'}}</span></label>
+  <select name="layer" class="select select-bordered">
+    <option value=""></option>
+    <option value="base" {{#ifEquals garment.layer 'base'}}selected{{/ifEquals}}>{{t 'lang.LAYER_BASE'}}</option>
+    <option value="mid" {{#ifEquals garment.layer 'mid'}}selected{{/ifEquals}}>{{t 'lang.LAYER_MID'}}</option>
+    <option value="outer" {{#ifEquals garment.layer 'outer'}}selected{{/ifEquals}}>{{t 'lang.LAYER_OUTER'}}</option>
+    <option value="accessory" {{#ifEquals garment.layer 'accessory'}}selected{{/ifEquals}}>{{t 'lang.LAYER_ACCESSORY'}}</option>
+  </select>
+</div>
+
+<div class="form-control">
+  <label class="label"><span class="label-text">{{t 'lang.FORMALITY'}}</span></label>
+  <input type="number" step="1" min="1" max="5" name="formality" class="input input-bordered" value="{{garment.formality}}" placeholder="1–5" />
+</div>
+
+<div class="form-control">
+  <label class="label"><span class="label-text">{{t 'lang.FIT_NOTES'}}</span></label>
+  <textarea name="fitNotes" class="textarea textarea-bordered" rows="2">{{garment.fitNotes}}</textarea>
+</div>
+
+<div class="form-control">
+  <label class="label"><span class="label-text">{{t 'lang.CONDITION'}}</span></label>
+  <select name="condition" class="select select-bordered">
+    <option value=""></option>
+    <option value="good" {{#ifEquals garment.condition 'good'}}selected{{/ifEquals}}>{{t 'lang.CONDITION_GOOD'}}</option>
+    <option value="worn" {{#ifEquals garment.condition 'worn'}}selected{{/ifEquals}}>{{t 'lang.CONDITION_WORN'}}</option>
+    <option value="damaged" {{#ifEquals garment.condition 'damaged'}}selected{{/ifEquals}}>{{t 'lang.CONDITION_DAMAGED'}}</option>
+  </select>
+</div>
+
+<div class="form-control">
+  <label class="label"><span class="label-text">{{t 'lang.REPAIR_NOTES'}}</span></label>
+  <textarea name="repairNotes" class="textarea textarea-bordered" rows="2">{{garment.repairNotes}}</textarea>
+</div>
