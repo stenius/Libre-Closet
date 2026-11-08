@@ -39,6 +39,7 @@ export function serializeGarment(garment: Garment) {
     fitNotes: garment.fitNotes ?? null,
     condition: garment.condition ?? null,
     repairNotes: garment.repairNotes ?? null,
+    disposition: garment.disposition ?? null,
   };
 }
 

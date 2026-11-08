@@ -83,6 +83,7 @@ export class ApiController {
       size?: string;
       archived?: string;
       layer?: string;
+      disposition?: string;
       condition?: string;
       waterResistance?: string;
       warmthAt?: string;

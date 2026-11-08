@@ -24,6 +24,7 @@ import {
   assertWarmthRange,
   GarmentAttributes,
   GarmentCondition,
+  GarmentDisposition,
   GarmentLayer,
   pickGarmentAttributes,
   WaterResistance,
@@ -77,6 +78,9 @@ export class GarmentService {
       ...(normalizedSize ? { size: normalizedSize } : {}),
       ...(dto.archived !== 'true' ? { archived: false } : {}),
       ...(dto.layer ? { layer: dto.layer as GarmentLayer } : {}),
+      ...(dto.disposition
+        ? { disposition: dto.disposition as GarmentDisposition }
+        : {}),
       ...(dto.condition
         ? { condition: dto.condition as GarmentCondition }
         : {}),

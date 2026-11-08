@@ -343,5 +343,18 @@
   "WEAR_COUNT": "Wears",
   "WEAR_LAST": "Last worn",
   "WEAR_NEVER": "Never",
-  "WEAR_LOG": "Log Wear"
+  "WEAR_LOG": "Log Wear",
+  "DISPOSITION": "Disposition",
+  "DISPOSITION_KEEP": "Keep",
+  "DISPOSITION_REPAIR": "Repair",
+  "DISPOSITION_DONATE": "Donate",
+  "DISPOSITION_TOSS": "Toss",
+  "REPAIR_LIST": "Repair List",
+  "REPAIR_LIST_EMPTY": "Nothing to repair.",
+  "MEASUREMENTS": "Body Measurements",
+  "MEASUREMENT_CHEST": "Chest (in)",
+  "MEASUREMENT_SHOULDERS": "Shoulders (in)",
+  "MEASUREMENT_WAIST": "Waist (in)",
+  "MEASUREMENT_INSEAM": "Inseam (in)",
+  "MEASUREMENT_NECK": "Neck (in)"
 }

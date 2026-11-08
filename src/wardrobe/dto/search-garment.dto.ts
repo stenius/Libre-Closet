@@ -8,6 +8,7 @@ export interface SearchGarmentDto {
   size?: string;
   archived?: string;
   layer?: string;
+  disposition?: string;
   condition?: string;
   waterResistance?: string;
   /** Temperature in °F that the garment's warmth range must include. */

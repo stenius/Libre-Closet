@@ -1,3 +1,4 @@
+import type { BodyMeasurements } from '../../auth/measurements';
 import {
   Cascade,
   Collection,
@@ -42,6 +43,9 @@ export class User extends ShareableId {
     inversedBy: 'user',
   })
   public passwordReset!: Ref<PasswordReset>;
+
+  @Property({ type: 'json', nullable: true })
+  public measurements?: BodyMeasurements | null;
 
   @OneToMany(() => UserDevice, (userDevice) => userDevice.user)
   public userDevices = new Collection<UserDevice>(this);

@@ -16,6 +16,7 @@ import { User } from './user.entity';
 import { GarmentColor } from '../../wardrobe/garment-color.enum';
 import type {
   GarmentCondition,
+  GarmentDisposition,
   GarmentLayer,
   WaterResistance,
 } from '../../wardrobe/garment-attributes';
@@ -79,6 +80,9 @@ export class Garment extends ShareableId {
 
   @Property({ type: 'text', nullable: true })
   public repairNotes?: string | null;
+
+  @Property({ type: 'string', nullable: true })
+  public disposition?: GarmentDisposition | null;
 
   @OneToOne({
     entity: () => File,
