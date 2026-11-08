@@ -13,6 +13,7 @@ import { CalendarService } from './calendar.service';
 import { CalendarController } from './calendar.controller';
 import { WardrobeController } from './wardrobe.controller';
 import { OutfitController } from './outfit.controller';
+import { ApiController } from './api.controller';
 import { WeatherModule } from '../weather/weather.module';
 
 @Module({
@@ -23,7 +24,12 @@ import { WeatherModule } from '../weather/weather.module';
     MikroOrmModule.forFeature([Garment, Outfit, OutfitCalendar, User]),
     WeatherModule,
   ],
-  controllers: [WardrobeController, OutfitController, CalendarController],
+  controllers: [
+    WardrobeController,
+    OutfitController,
+    CalendarController,
+    ApiController,
+  ],
   providers: [GarmentService, OutfitService, CalendarService],
   exports: [GarmentService, OutfitService, CalendarService],
 })

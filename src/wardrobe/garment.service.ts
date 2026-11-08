@@ -21,8 +21,12 @@ import { WardrobeShareService } from '../wardrobe-share/wardrobe-share.service';
 import {
   assertWarmthRange,
   GarmentAttributes,
+  GarmentCondition,
+  GarmentLayer,
   pickGarmentAttributes,
+  WaterResistance,
 } from './garment-attributes';
+import { colorMatchConditions } from './garment-filters';
 
 const CANONICAL_SIZES = [
   'XX-Small',
@@ -66,9 +70,24 @@ export class GarmentService {
     const normalizedSize = this.normalizeSize(dto.size);
     const searchConditions: FilterQuery<Garment> = {
       ...(dto.category ? { category: dto.category } : {}),
-      ...(dto.color ? { color: dto.color } : {}),
       ...(normalizedSize ? { size: normalizedSize } : {}),
       ...(dto.archived !== 'true' ? { archived: false } : {}),
+      ...(dto.layer ? { layer: dto.layer as GarmentLayer } : {}),
+      ...(dto.condition
+        ? { condition: dto.condition as GarmentCondition }
+        : {}),
+      ...(dto.waterResistance
+        ? { waterResistance: dto.waterResistance as WaterResistance }
+        : {}),
+      ...(dto.warmthAt != null
+        ? {
+            warmthMinF: { $lte: dto.warmthAt },
+            warmthMaxF: { $gte: dto.warmthAt },
+          }
+        : {}),
+      ...(dto.color
+        ? { $and: [{ $or: colorMatchConditions(dto.color) }] }
+        : {}),
       ...(dto.keyword
         ? {
             $or: [
