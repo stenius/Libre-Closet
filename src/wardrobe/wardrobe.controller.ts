@@ -191,6 +191,16 @@ export class WardrobeController {
     return reply.redirect(`/wardrobe/${garment.id}?${params}`, 302);
   }
 
+  @Get('repairs')
+  @Render('wardrobe/repairs')
+  async repairs(@Req() req: FastifyRequest) {
+    return {
+      garments: await this.garmentService.findAll(this.userId(req), {
+        disposition: 'repair',
+      }),
+    };
+  }
+
   @Get('wear-stats')
   @Render('wardrobe/wear-stats')
   async wearStats(@Req() req: FastifyRequest) {

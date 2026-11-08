@@ -351,6 +351,19 @@ export type I18nTranslations = {
         "WEAR_LAST": string;
         "WEAR_NEVER": string;
         "WEAR_LOG": string;
+        "DISPOSITION": string;
+        "DISPOSITION_KEEP": string;
+        "DISPOSITION_REPAIR": string;
+        "DISPOSITION_DONATE": string;
+        "DISPOSITION_TOSS": string;
+        "REPAIR_LIST": string;
+        "REPAIR_LIST_EMPTY": string;
+        "MEASUREMENTS": string;
+        "MEASUREMENT_CHEST": string;
+        "MEASUREMENT_SHOULDERS": string;
+        "MEASUREMENT_WAIST": string;
+        "MEASUREMENT_INSEAM": string;
+        "MEASUREMENT_NECK": string;
     };
 };
 /* prettier-ignore */

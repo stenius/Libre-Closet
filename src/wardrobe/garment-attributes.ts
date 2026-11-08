@@ -8,6 +8,13 @@ export const WATER_RESISTANCE_LEVELS = [
 export const GARMENT_LAYERS = ['base', 'mid', 'outer', 'accessory'] as const;
 export const GARMENT_CONDITIONS = ['good', 'worn', 'damaged'] as const;
 
+export const GARMENT_DISPOSITIONS = [
+  'keep',
+  'repair',
+  'donate',
+  'toss',
+] as const;
+
 export const FORMALITY_MIN = 1;
 export const FORMALITY_MAX = 5;
 const WARMTH_MIN_F = -100;
@@ -16,6 +23,7 @@ const WARMTH_MAX_F = 150;
 export type WaterResistance = (typeof WATER_RESISTANCE_LEVELS)[number];
 export type GarmentLayer = (typeof GARMENT_LAYERS)[number];
 export type GarmentCondition = (typeof GARMENT_CONDITIONS)[number];
+export type GarmentDisposition = (typeof GARMENT_DISPOSITIONS)[number];
 
 export interface GarmentAttributes {
   materials: string | null;
@@ -27,6 +35,7 @@ export interface GarmentAttributes {
   fitNotes: string | null;
   condition: GarmentCondition | null;
   repairNotes: string | null;
+  disposition: GarmentDisposition | null;
 }
 
 export type GarmentAttributesInput = {
@@ -103,6 +112,7 @@ export function parseGarmentAttributes(
     fitNotes: (v) => parseText('fitNotes', v),
     condition: (v) => parseChoice('condition', v, GARMENT_CONDITIONS),
     repairNotes: (v) => parseText('repairNotes', v),
+    disposition: (v) => parseChoice('disposition', v, GARMENT_DISPOSITIONS),
   };
 
   const result: Record<string, unknown> = {};
@@ -122,6 +132,7 @@ const ATTRIBUTE_KEYS: (keyof GarmentAttributes)[] = [
   'fitNotes',
   'condition',
   'repairNotes',
+  'disposition',
 ];
 
 /** Copies only the attribute fields that are present in a parsed DTO. */

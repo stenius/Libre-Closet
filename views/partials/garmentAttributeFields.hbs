@@ -56,6 +56,17 @@
 </div>
 
 <div class="form-control">
+  <label class="label"><span class="label-text">{{t 'lang.DISPOSITION'}}</span></label>
+  <select name="disposition" class="select select-bordered">
+    <option value=""></option>
+    <option value="keep" {{#ifEquals garment.disposition 'keep'}}selected{{/ifEquals}}>{{t 'lang.DISPOSITION_KEEP'}}</option>
+    <option value="repair" {{#ifEquals garment.disposition 'repair'}}selected{{/ifEquals}}>{{t 'lang.DISPOSITION_REPAIR'}}</option>
+    <option value="donate" {{#ifEquals garment.disposition 'donate'}}selected{{/ifEquals}}>{{t 'lang.DISPOSITION_DONATE'}}</option>
+    <option value="toss" {{#ifEquals garment.disposition 'toss'}}selected{{/ifEquals}}>{{t 'lang.DISPOSITION_TOSS'}}</option>
+  </select>
+</div>
+
+<div class="form-control">
   <label class="label"><span class="label-text">{{t 'lang.REPAIR_NOTES'}}</span></label>
   <textarea name="repairNotes" class="textarea textarea-bordered" rows="2">{{garment.repairNotes}}</textarea>
 </div>

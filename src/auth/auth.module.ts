@@ -10,6 +10,10 @@ import {
   ApiTokenController,
 } from './api-token.controller';
 import { ApiTokenGuard } from './api-token.guard';
+import {
+  ApiMeasurementsController,
+  MeasurementsController,
+} from './measurements.controller';
 import { ApiTokenService } from './api-token.service';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -32,7 +36,13 @@ import { ViewContextModule } from '../view-context/view-context.module';
     MikroOrmModule.forFeature([ApiToken, PasswordReset, User]),
     EmailModule,
   ],
-  controllers: [AuthController, ApiTokenController, ApiIdentityController],
+  controllers: [
+    AuthController,
+    ApiTokenController,
+    ApiIdentityController,
+    MeasurementsController,
+    ApiMeasurementsController,
+  ],
   providers: [
     AuthService,
     AuthGuard,
