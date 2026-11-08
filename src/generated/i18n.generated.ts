@@ -364,6 +364,12 @@ export type I18nTranslations = {
         "MEASUREMENT_WAIST": string;
         "MEASUREMENT_INSEAM": string;
         "MEASUREMENT_NECK": string;
+        "OUTFIT_PIECES": string;
+        "OUTFIT_PIECE_NO_PHOTO": string;
+        "OUTFIT_PHOTO_TAKE": string;
+        "OUTFIT_PHOTO_RETAKE": string;
+        "OUTFIT_PHOTO_CHOOSE": string;
+        "OUTFIT_PHOTO_REMOVE": string;
     };
 };
 /* prettier-ignore */

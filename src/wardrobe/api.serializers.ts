@@ -56,6 +56,7 @@ export function serializeOutfit(outfit: Outfit) {
     id: outfit.id,
     name: outfit.name ?? null,
     notes: outfit.notes ?? null,
+    photo: (outfit.photo as any)?.fileName ?? null,
     garmentIds: outfit.garments.getItems().map((g) => g.id),
     garments: outfit.garments.getItems().map(serializeGarment),
   };
