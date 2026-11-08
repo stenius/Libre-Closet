@@ -142,6 +142,29 @@ export class CalendarService {
     return entry;
   }
 
+  /** Sets the worn state explicitly, so repeated API calls are safe. */
+  async setWorn(
+    id: number,
+    worn: boolean,
+    userId?: number,
+  ): Promise<OutfitCalendar> {
+    const entry = await this.findOneOwned(id, userId);
+    entry.wornAt = worn ? (entry.wornAt ?? new Date()) : undefined;
+    await this.calendarRepository.getEntityManager().flush();
+    return entry;
+  }
+
+  /** Entries from `from` through `to` inclusive, oldest first. */
+  findRange(from: Date, to: Date, userId?: number): Promise<OutfitCalendar[]> {
+    return this.calendarRepository.find(
+      {
+        date: { $gte: from, $lte: to },
+        ...(userId != null ? { owner: { id: userId } } : { owner: null }),
+      },
+      { populate: ['outfit'], orderBy: { date: 'ASC' } },
+    );
+  }
+
   /** Returns outfits the user may add to the calendar (respects auth scoping). */
   async findOutfitsForUser(userId?: number): Promise<Outfit[]> {
     if (userId != null) {
@@ -536,10 +559,7 @@ export class CalendarService {
     };
   }
 
-  private async findOneOwned(
-    id: number,
-    userId?: number,
-  ): Promise<OutfitCalendar> {
+  async findOneOwned(id: number, userId?: number): Promise<OutfitCalendar> {
     const entry = await this.calendarRepository.findOne(id, {
       populate: ['outfit'],
     });
