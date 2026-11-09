@@ -20,6 +20,8 @@ import { ConditionalAuthGuard } from '../auth/conditional-auth.guard';
 import { Payload } from '../auth/dto/payload.dto';
 import { OutfitService } from './outfit.service';
 import { orderOutfitPieces } from './outfit-pieces';
+import { buildOutfitGallery } from './outfit-gallery';
+import { parsePhotoLabel } from './garment-attributes';
 import { GarmentService } from './garment.service';
 import { CalendarService } from './calendar.service';
 
@@ -152,7 +154,58 @@ export class OutfitController {
         damaged: garment.condition === 'damaged',
       };
     });
-    return { outfit, pieces };
+    const extras = await this.outfitService.listExtraPhotos(
+      id,
+      this.userId(req),
+    );
+    const gallery = buildOutfitGallery(
+      outfit.photo as any,
+      outfit.photoLabel,
+      extras.map((photo) => ({
+        id: photo.id,
+        label: photo.label,
+        fileName: photo.file.getEntity().fileName,
+      })),
+    );
+    return { outfit, pieces, gallery };
+  }
+
+  @Post(':id/photos')
+  async addPhoto(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('label') label: unknown,
+    @Req() req: FastifyRequest,
+    @Res() reply: FastifyReply,
+  ) {
+    await this.outfitService.addPhoto(
+      id,
+      () => (req as any).files({ limits: { files: 1 } }),
+      parsePhotoLabel(label),
+      this.userId(req),
+    );
+    return reply.redirect(`/outfits/${id}`, 302);
+  }
+
+  @Post(':id/photos/:photoId/cover')
+  async makeCover(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('photoId', ParseIntPipe) photoId: number,
+    @Req() req: FastifyRequest,
+    @Res() reply: FastifyReply,
+  ) {
+    await this.outfitService.setCover(id, photoId, this.userId(req));
+    return reply.redirect(`/outfits/${id}`, 302);
+  }
+
+  @Post(':id/photos/:photoId/delete')
+  async removeExtraPhoto(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('photoId', ParseIntPipe) photoId: number,
+    @Req() req: FastifyRequest,
+    @Res() reply: FastifyReply,
+  ) {
+    await this.outfitService.removeExtraPhoto(id, photoId, this.userId(req));
+    return reply.redirect(`/outfits/${id}`, 302);
   }
 
   @Post(':id/photo')
