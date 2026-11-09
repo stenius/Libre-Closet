@@ -58,6 +58,16 @@
         {{#if this.notes}}
         <p class="text-xs text-base-content/60 line-clamp-2">{{this.notes}}</p>
         {{/if}}
+        {{#if this.photo}}
+        <a href="/outfits/{{this.id}}" class="block mt-1">
+          <img
+            src="/file/{{this.photo.fileName}}"
+            alt="{{this.name}}"
+            loading="lazy"
+            class="w-full h-80 rounded object-contain bg-base-200"
+          />
+        </a>
+        {{else}}
         <a href="/outfits/{{this.id}}" class="flex flex-wrap gap-1 mt-1">
           {{#each this.garments}} {{#if this.photo}}
           <img
@@ -86,6 +96,7 @@
           </div>
           {{/if}} {{/each}}
         </a>
+        {{/if}}
       </div>
     </div>
     {{/each}}

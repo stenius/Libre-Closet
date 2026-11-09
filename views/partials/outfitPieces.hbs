@@ -1,24 +1,30 @@
-<h2 class="font-semibold mb-3">{{t 'lang.OUTFIT_PIECES'}} ({{pieces.length}})</h2>
+<div class="flex items-center justify-between gap-2 mb-3">
+  <h2 class="font-semibold">{{t 'lang.OUTFIT_PIECES'}} ({{pieces.length}})</h2>
+  {{#if pieces.length}}
+  <button type="button" id="pieceViewerOpen" class="btn btn-neutral btn-sm">{{t 'lang.OUTFIT_PIECES_STEP'}}</button>
+  {{/if}}
+</div>
 {{#if pieces.length}}
 <ol class="flex flex-col gap-2 mb-8">
   {{#each pieces}}
-  <li>
-    <a href="/wardrobe/{{id}}" class="flex items-center gap-3 bg-base-200 rounded-box p-2">
+  <li class="flex items-center gap-3 bg-base-200 rounded-box p-2">
+    <button type="button" data-piece-index="{{@index}}" class="shrink-0" aria-label="{{t 'lang.OUTFIT_PIECES_VIEW'}}: {{displayName}}">
       {{#if photo}}
-      <img src="/file/nobg/{{photo}}" alt="" class="size-20 rounded-box object-cover shrink-0" />
+      <img src="/file/nobg/{{photo}}" alt="" class="size-20 rounded-box object-cover" />
       {{else}}
-      <div class="size-20 rounded-box bg-base-300 flex items-center justify-center shrink-0 text-xs text-base-content/50 text-center p-1">{{t 'lang.OUTFIT_PIECE_NO_PHOTO'}}</div>
+      <div class="size-20 rounded-box bg-base-300 flex items-center justify-center text-xs text-base-content/50 text-center p-1">{{t 'lang.OUTFIT_PIECE_NO_PHOTO'}}</div>
       {{/if}}
-      <div class="min-w-0">
-        <p class="text-xs uppercase tracking-wide text-base-content/60">{{categoryLabel}}</p>
-        <p class="font-semibold leading-snug">{{displayName}}</p>
-        {{#if details}}<p class="text-sm text-base-content/70">{{details}}</p>{{/if}}
-        {{#if damaged}}<span class="badge badge-warning badge-sm mt-1">{{t 'lang.CONDITION_DAMAGED'}}</span>{{/if}}
-      </div>
+    </button>
+    <a href="/wardrobe/{{id}}" class="min-w-0 flex-1">
+      <p class="text-xs uppercase tracking-wide text-base-content/60">{{categoryLabel}}</p>
+      <p class="font-semibold leading-snug">{{displayName}}</p>
+      {{#if details}}<p class="text-sm text-base-content/70">{{details}}</p>{{/if}}
+      {{#if damaged}}<span class="badge badge-warning badge-sm mt-1">{{t 'lang.CONDITION_DAMAGED'}}</span>{{/if}}
     </a>
   </li>
   {{/each}}
 </ol>
+{{> outfitPieceViewer}}
 {{else}}
 <p class="text-base-content/40 text-sm italic mb-8">No garments added yet.</p>
 {{/if}}

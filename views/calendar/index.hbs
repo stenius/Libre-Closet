@@ -147,7 +147,19 @@
             onclick="window.location.href='/outfits/{{this.outfit.id}}/edit?returnTo=/calendar&returnToWeek={{../dateParam}}'"
           >
             {{!-- Left: garment thumbnails if available, else name/untitled
-            fallback --}} {{#if this.outfit.garmentPhotos.length}}
+            fallback --}} {{#if this.outfit.coverPhoto}}
+            <span class="flex items-center gap-2 min-w-0 flex-1">
+              <img
+                src="/file/{{this.outfit.coverPhoto}}"
+                alt=""
+                class="size-12 rounded object-cover shrink-0"
+              />
+              <span class="truncate"
+                >{{#if this.outfit.name}}{{this.outfit.name}}{{else}}{{t
+                'lang.UNTITLED_OUTFIT'}}{{/if}}</span
+              >
+            </span>
+            {{else if this.outfit.garmentPhotos.length}}
             <span
               class="flex items-center gap-0.5 min-w-0 overflow-hidden flex-1"
             >

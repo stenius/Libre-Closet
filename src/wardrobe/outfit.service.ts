@@ -37,13 +37,13 @@ export class OutfitService {
     if (userId != null) {
       return this.outfitRepository.find(
         { owner: { id: userId } },
-        { populate: ['garments', 'garments.photo'] },
+        { populate: ['garments', 'garments.photo', 'photo'] },
       );
     }
     // AUTH_ENABLED=false: only return outfits that belong to no user
     return this.outfitRepository.find(
       { owner: null },
-      { populate: ['garments', 'garments.photo'] },
+      { populate: ['garments', 'garments.photo', 'photo'] },
     );
   }
 

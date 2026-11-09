@@ -370,6 +370,12 @@ export type I18nTranslations = {
         "OUTFIT_PHOTO_RETAKE": string;
         "OUTFIT_PHOTO_CHOOSE": string;
         "OUTFIT_PHOTO_REMOVE": string;
+        "OUTFIT_PIECES_STEP": string;
+        "OUTFIT_PIECES_VIEW": string;
+        "OUTFIT_PIECES_OPEN_ITEM": string;
+        "OUTFIT_PIECES_PREV": string;
+        "OUTFIT_PIECES_NEXT": string;
+        "OUTFIT_PIECES_CLOSE": string;
     };
 };
 /* prettier-ignore */
