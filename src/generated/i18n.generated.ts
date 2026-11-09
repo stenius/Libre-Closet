@@ -376,6 +376,12 @@ export type I18nTranslations = {
         "OUTFIT_PIECES_PREV": string;
         "OUTFIT_PIECES_NEXT": string;
         "OUTFIT_PIECES_CLOSE": string;
+        "OUTFIT_PHOTOS": string;
+        "OUTFIT_PHOTO_COVER": string;
+        "OUTFIT_PHOTO_MAKE_COVER": string;
+        "OUTFIT_PHOTO_LABEL": string;
+        "OUTFIT_PHOTO_JACKET_ON": string;
+        "OUTFIT_PHOTO_JACKET_OFF": string;
     };
 };
 /* prettier-ignore */

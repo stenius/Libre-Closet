@@ -12,6 +12,7 @@ import type { MultipartFile } from '@fastify/multipart';
 import { File } from '../dal/entity/file.entity';
 import { FileService } from '../file/file-service.abstract';
 import { Garment } from '../dal/entity/garment.entity';
+import { OutfitPhoto } from '../dal/entity/outfit-photo.entity';
 import { Outfit, OutfitSlot } from '../dal/entity/outfit.entity';
 import { User } from '../dal/entity/user.entity';
 import { GarmentCategory } from './garment-category.enum';
@@ -25,6 +26,8 @@ export class OutfitService {
   constructor(
     @InjectRepository(Outfit)
     private readonly outfitRepository: EntityRepository<Outfit>,
+    @InjectRepository(OutfitPhoto)
+    private readonly photoRepository: EntityRepository<OutfitPhoto>,
     @InjectRepository(Garment)
     private readonly garmentRepository: EntityRepository<Garment>,
     @InjectRepository(User)
@@ -129,8 +132,106 @@ export class OutfitService {
   async remove(id: number, userId?: number): Promise<void> {
     const outfit = await this.findOne(id, userId);
     const photo = outfit.photo as unknown as File | undefined;
+    const extras = await this.findExtraPhotos(id);
     await this.outfitRepository.getEntityManager().removeAndFlush(outfit);
     await this.deleteStoredPhoto(photo);
+    await Promise.all(
+      extras.map((extra) => this.deleteStoredPhoto(extra.file.getEntity())),
+    );
+  }
+
+  private findExtraPhotos(outfitId: number): Promise<OutfitPhoto[]> {
+    return this.photoRepository.find(
+      { outfit: outfitId },
+      { populate: ['file'], orderBy: { id: 'ASC' } },
+    );
+  }
+
+  async listExtraPhotos(id: number, userId?: number): Promise<OutfitPhoto[]> {
+    await this.findOne(id, userId);
+    return this.findExtraPhotos(id);
+  }
+
+  /** Stores one photo from a multipart upload, after access has been checked. */
+  private async storeUpload(
+    getFiles: () => AsyncIterableIterator<MultipartFile>,
+    userId?: number,
+  ): Promise<File> {
+    let stored: Promise<File> | undefined;
+    for await (const part of getFiles()) {
+      if (part.fieldname === 'photo' && !stored) {
+        stored = this.fileService.storeImageFromFileUpload(part, userId);
+        // Awaited after the loop; a rejection before then must not crash Node.
+        stored.catch(() => undefined);
+      } else {
+        part.file.resume();
+      }
+    }
+    if (!stored) throw new BadRequestException('photo file is required');
+    return stored;
+  }
+
+  /** Adds a photo. The first one an outfit gets becomes its cover. */
+  async addPhoto(
+    id: number,
+    getFiles: () => AsyncIterableIterator<MultipartFile>,
+    label: string | null,
+    userId?: number,
+  ): Promise<void> {
+    const outfit = await this.findOne(id, userId);
+    const file = await this.storeUpload(getFiles, userId);
+    const em = this.outfitRepository.getEntityManager();
+    if (!outfit.photo) {
+      outfit.photo = file as any;
+      outfit.photoLabel = label;
+    } else {
+      em.persist(
+        this.photoRepository.create({
+          outfit: outfit as any,
+          file: file as any,
+          label,
+          createdAt: new Date(),
+        }),
+      );
+    }
+    await em.flush();
+  }
+
+  /** Swaps an additional photo with the current cover. */
+  async setCover(id: number, photoId: number, userId?: number): Promise<void> {
+    const outfit = await this.findOne(id, userId);
+    const extra = await this.findExtraPhoto(id, photoId);
+    const previous = outfit.photo as unknown as File;
+    const previousLabel = outfit.photoLabel ?? null;
+    outfit.photo = extra.file.getEntity() as any;
+    outfit.photoLabel = extra.label ?? null;
+    extra.file = wrap(previous).toReference() as any;
+    extra.label = previousLabel;
+    await this.outfitRepository.getEntityManager().flush();
+  }
+
+  async removeExtraPhoto(
+    id: number,
+    photoId: number,
+    userId?: number,
+  ): Promise<void> {
+    await this.findOne(id, userId);
+    const extra = await this.findExtraPhoto(id, photoId);
+    const file = extra.file.getEntity();
+    await this.photoRepository.nativeDelete({ id: extra.id });
+    await this.deleteStoredPhoto(file);
+  }
+
+  private async findExtraPhoto(
+    outfitId: number,
+    photoId: number,
+  ): Promise<OutfitPhoto> {
+    const extra = await this.photoRepository.findOne(
+      { id: photoId, outfit: outfitId },
+      { populate: ['file'] },
+    );
+    if (!extra) throw new NotFoundException('Photo not found');
+    return extra;
   }
 
   /**
@@ -143,21 +244,11 @@ export class OutfitService {
     userId?: number,
   ): Promise<Outfit> {
     const outfit = await this.findOne(id, userId);
-
-    let stored: Promise<File> | undefined;
-    for await (const part of getFiles()) {
-      if (part.fieldname === 'photo' && !stored) {
-        stored = this.fileService.storeImageFromFileUpload(part, userId);
-        // Awaited after the loop; a rejection before then must not crash Node.
-        stored.catch(() => undefined);
-      } else {
-        part.file.resume();
-      }
-    }
-    if (!stored) throw new BadRequestException('photo file is required');
+    const file = await this.storeUpload(getFiles, userId);
 
     const previous = outfit.photo as unknown as File | undefined;
-    outfit.photo = (await stored) as any;
+    outfit.photo = file as any;
+    outfit.photoLabel = null;
     await this.outfitRepository.getEntityManager().flush();
     await this.deleteStoredPhoto(previous);
     return outfit;
@@ -167,7 +258,13 @@ export class OutfitService {
     const outfit = await this.findOne(id, userId);
     const photo = outfit.photo as unknown as File | undefined;
     if (!photo) return;
-    (outfit as any).photo = null;
+    // The oldest additional photo, if any, takes over as the cover.
+    const [next] = await this.findExtraPhotos(id);
+    (outfit as any).photo = next ? next.file.getEntity() : null;
+    outfit.photoLabel = next?.label ?? null;
+    if (next) {
+      await this.photoRepository.nativeDelete({ id: next.id });
+    }
     await this.outfitRepository.getEntityManager().flush();
     await this.deleteStoredPhoto(photo);
   }

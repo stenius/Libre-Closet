@@ -2,6 +2,7 @@ import { Garment } from '../dal/entity/garment.entity';
 import { GarmentPhoto } from '../dal/entity/garment-photo.entity';
 import { OutfitCalendar } from '../dal/entity/outfit-calendar.entity';
 import { Outfit } from '../dal/entity/outfit.entity';
+import { OutfitPhoto } from '../dal/entity/outfit-photo.entity';
 
 function splitColors(color?: string | null): string[] {
   return (
@@ -51,12 +52,21 @@ export function serializeGarmentPhoto(photo: GarmentPhoto) {
   };
 }
 
+export function serializeOutfitPhoto(photo: OutfitPhoto) {
+  return {
+    id: photo.id,
+    photo: photo.file.getEntity().fileName,
+    label: photo.label ?? null,
+  };
+}
+
 export function serializeOutfit(outfit: Outfit) {
   return {
     id: outfit.id,
     name: outfit.name ?? null,
     notes: outfit.notes ?? null,
     photo: (outfit.photo as any)?.fileName ?? null,
+    photoLabel: outfit.photoLabel ?? null,
     garmentIds: outfit.garments.getItems().map((g) => g.id),
     garments: outfit.garments.getItems().map(serializeGarment),
   };
