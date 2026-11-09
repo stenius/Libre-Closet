@@ -362,5 +362,11 @@
   "OUTFIT_PHOTO_TAKE": "Take Outfit Photo",
   "OUTFIT_PHOTO_RETAKE": "Retake Photo",
   "OUTFIT_PHOTO_CHOOSE": "Choose Photo",
-  "OUTFIT_PHOTO_REMOVE": "Remove Photo"
+  "OUTFIT_PHOTO_REMOVE": "Remove Photo",
+  "OUTFIT_PIECES_STEP": "Step Through Pieces",
+  "OUTFIT_PIECES_VIEW": "View piece",
+  "OUTFIT_PIECES_OPEN_ITEM": "Open item details",
+  "OUTFIT_PIECES_PREV": "Previous",
+  "OUTFIT_PIECES_NEXT": "Next",
+  "OUTFIT_PIECES_CLOSE": "Close"
 }

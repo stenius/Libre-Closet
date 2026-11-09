@@ -79,7 +79,14 @@ export class CalendarService {
 
     const entries = await this.calendarRepository.find(
       { ...ownerFilter, date: { $gte: weekStart, $lt: weekEnd } },
-      { populate: ['outfit', 'outfit.garments', 'outfit.garments.photo'] },
+      {
+        populate: [
+          'outfit',
+          'outfit.garments',
+          'outfit.garments.photo',
+          'outfit.photo',
+        ],
+      },
     );
 
     const days: CalendarDay[] = Array.from({ length: 7 }, (_, i) => {
@@ -459,6 +466,7 @@ export class CalendarService {
               id: outfit.id,
               name: outfit.name || null,
               garmentPhotos,
+              coverPhoto: (outfit.photo as any)?.fileName ?? null,
               pieces: orderOutfitPieces(
                 outfit.garments.getItems(),
                 outfit.slots,
