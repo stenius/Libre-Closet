@@ -23,6 +23,7 @@ import {
   serializeGarment,
   serializeGarmentPhoto,
   serializeOutfit,
+  serializeOutfitPhoto,
 } from './api.serializers';
 import { CalendarService } from './calendar.service';
 import {
@@ -337,6 +338,55 @@ export class ApiController {
       userId,
     );
     return serializeOutfit(await this.outfitService.findOne(id, userId));
+  }
+
+  @Get('outfits/:id/photos')
+  async listOutfitPhotos(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: FastifyRequest,
+  ) {
+    const photos = await this.outfitService.listExtraPhotos(
+      id,
+      this.userId(req),
+    );
+    return photos.map(serializeOutfitPhoto);
+  }
+
+  @Post('outfits/:id/photos')
+  async addOutfitPhoto(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('label') label: unknown,
+    @Req() req: FastifyRequest,
+  ) {
+    const userId = this.userId(req);
+    await this.outfitService.addPhoto(
+      id,
+      () => (req as any).files({ limits: { files: 1 } }),
+      parsePhotoLabel(label),
+      userId,
+    );
+    return serializeOutfit(await this.outfitService.findOne(id, userId));
+  }
+
+  @Put('outfits/:id/photos/:photoId/cover')
+  async setOutfitCover(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('photoId', ParseIntPipe) photoId: number,
+    @Req() req: FastifyRequest,
+  ) {
+    const userId = this.userId(req);
+    await this.outfitService.setCover(id, photoId, userId);
+    return serializeOutfit(await this.outfitService.findOne(id, userId));
+  }
+
+  @Delete('outfits/:id/photos/:photoId')
+  @HttpCode(204)
+  async deleteOutfitExtraPhoto(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('photoId', ParseIntPipe) photoId: number,
+    @Req() req: FastifyRequest,
+  ) {
+    await this.outfitService.removeExtraPhoto(id, photoId, this.userId(req));
   }
 
   @Delete('outfits/:id/photo')

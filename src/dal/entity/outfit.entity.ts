@@ -35,6 +35,9 @@ export class Outfit extends ShareableId {
   @OneToOne({ entity: () => File, nullable: true, deleteRule: 'set null' })
   public photo?: Ref<File>;
 
+  @Property({ type: 'string', nullable: true })
+  public photoLabel?: string | null;
+
   @ManyToMany(() => Garment, (garment) => garment.outfits, { owner: true })
   public garments = new Collection<Garment>(this);
 

@@ -359,7 +359,7 @@
   "MEASUREMENT_NECK": "Neck (in)",
   "OUTFIT_PIECES": "Pieces to wear",
   "OUTFIT_PIECE_NO_PHOTO": "No photo",
-  "OUTFIT_PHOTO_TAKE": "Take Outfit Photo",
+  "OUTFIT_PHOTO_TAKE": "Take Photo",
   "OUTFIT_PHOTO_RETAKE": "Retake Photo",
   "OUTFIT_PHOTO_CHOOSE": "Choose Photo",
   "OUTFIT_PHOTO_REMOVE": "Remove Photo",
@@ -368,5 +368,11 @@
   "OUTFIT_PIECES_OPEN_ITEM": "Open item details",
   "OUTFIT_PIECES_PREV": "Previous",
   "OUTFIT_PIECES_NEXT": "Next",
-  "OUTFIT_PIECES_CLOSE": "Close"
+  "OUTFIT_PIECES_CLOSE": "Close",
+  "OUTFIT_PHOTOS": "Outfit Photos",
+  "OUTFIT_PHOTO_COVER": "Cover",
+  "OUTFIT_PHOTO_MAKE_COVER": "Make Cover",
+  "OUTFIT_PHOTO_LABEL": "Label (optional), like Jacket on",
+  "OUTFIT_PHOTO_JACKET_ON": "Jacket on",
+  "OUTFIT_PHOTO_JACKET_OFF": "Jacket off"
 }

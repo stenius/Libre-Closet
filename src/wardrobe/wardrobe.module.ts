@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { Garment } from '../dal/entity/garment.entity';
 import { GarmentPhoto } from '../dal/entity/garment-photo.entity';
 import { GarmentWear } from '../dal/entity/garment-wear.entity';
+import { OutfitPhoto } from '../dal/entity/outfit-photo.entity';
 import { WearService } from './wear.service';
 import { Outfit } from '../dal/entity/outfit.entity';
 import { OutfitCalendar } from '../dal/entity/outfit-calendar.entity';
@@ -28,6 +29,7 @@ import { WeatherModule } from '../weather/weather.module';
       Garment,
       GarmentPhoto,
       GarmentWear,
+      OutfitPhoto,
       Outfit,
       OutfitCalendar,
       User,
